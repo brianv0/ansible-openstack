@@ -1,0 +1,15 @@
+---
+
+# Number of workers to spawn in the cluster (0 indexed)
+nbr_of_slaves: 1
+
+# You should create a keypair with OpenStack
+key_name: spark-keypair
+
+# Name of the user used to install everything
+# on the remote systems. 
+# By default, OSs with cloud-init will add a
+# cloud-user, and your keypair will allow you
+# to login as that user.
+user: cloud-user
+

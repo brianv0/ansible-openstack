@@ -1,0 +1,1 @@
+ansible-playbook release.yml --extra-vars "instance_state=present"

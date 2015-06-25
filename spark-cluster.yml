@@ -1,0 +1,60 @@
+---
+
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - vars/main-config.yml
+
+  tasks:
+  - name: Create a master instance
+
+    # Uses nova_compute. Ansible 2 will use os_server
+    nova_compute:
+      
+      # present brings this up, absent takes it down
+      state: "{{ instance_state }}"
+      
+      # host name
+      name: spark-master
+
+      # This is SLAC or OpenStack-user specific. In this case,
+      # I uploaded a rhel7 image to OpenStack and I'm using it,
+      # as our rhel6 image doesn't have cloud-init.
+      # You want to use whatever image is available to you, 
+      # and that image should have cloud-init installed (most do)
+      image_name: rhel7
+
+      # You should have created this previously
+      key_name: spark-keypair
+
+      # This is SLAC specific
+      flavor_id: n1.small
+
+      # For SLAC, I needed this because without the floating IP,
+      # I was unable to perform outbound requests and download software
+      # with curl.
+      auto_floating_ip: yes
+
+      # This may also be different for you. You may be able to omit it.
+      security_groups: default
+      meta:
+        hostname: spark-master # hostname
+        ansible_host_groups: default
+    register: spark_master # openstack instance name
+
+  - name: Create slaves
+    nova_compute:
+      state: "{{ instance_state }}"
+      name: "{{ item }}"
+      image_name: rhel7
+      key_name: spark-keypair
+      flavor_id: n1.small
+      auto_floating_ip: yes
+      security_groups: default
+      meta:
+        hostname: "{{ item }}"
+        ansible_host_groups: default
+    register: spark_slaves
+    with_sequence: 
+      start=0 end="{{ nbr_of_slaves }}" format=spark-slave%02x

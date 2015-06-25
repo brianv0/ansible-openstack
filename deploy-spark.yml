@@ -1,0 +1,22 @@
+---
+# ------------------------
+# Deploy the general stuff
+# ------------------------
+- hosts: all
+  sudo: yes
+  remote_user: cloud-user
+
+  vars_files:
+    - vars/main-config.yml
+ 
+  tasks:
+
+    - name: download spark
+      get_url:
+        url=http://d3kbcqa49mib13.cloudfront.net/spark-1.4.0-bin-without-hadoop.tgz
+        dest=/opt/ 
+ 
+    - name: unzip spark
+      unarchive: copy=no src=/opt/spark-1.4.0-bin-without-hadoop.tgz  dest=/opt
+
+    # do more stuff here...
