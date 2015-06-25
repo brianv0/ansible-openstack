@@ -1,1 +1,2 @@
-ansible-playbook release.yml --extra-vars "instance_state=absent"
+#!/bin/bash
+ansible-playbook -i localhost spark-cluster.yml --extra-vars "instance_state=absent"
